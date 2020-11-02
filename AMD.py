@@ -51,7 +51,7 @@ def generate_Z3():
             if p[1] and p[2]: yield p[0], -p[1], -p[2] 
             if p[0] and p[1] and p[2]: yield -p[0], -p[1], -p[2]
 
-def generate_concentric_lattice(motif, cell):
+def generate_concentric_cloud(motif, cell):
     """
     generates periodic point cloud in 'spherical' layers
     """
@@ -81,7 +81,7 @@ def PDD(motif, cell, k):
     """
 
     # generates point cloud in concentric layers
-    g = generate_concentric_lattice(motif, cell)
+    g = generate_concentric_cloud(motif, cell)
     l = next(g)
     points = l.shape[0]
     cloud = [l]
@@ -170,17 +170,6 @@ def WPD(motif, cell, k, tol=None):
 
     return np.array(wpd)
 
-def AMD_estimate(motif, cell, k):
-    """
-    Returns an estimate of AMD(motif, cell, k), given by
-    cbrt((3 * Vol(cell) * k) / (4 * pi * m))
-    where m = motif.shape[0]
-    """
-    m = motif.shape[0]
-    det = np.linalg.det(cell)
-    c = np.cbrt((3 * det) / (4 * np.pi * m))
-    return [np.cbrt(x) * c for x in range(k+1)]
-
 def motif_cell_fromCrystal(crystal):
     """
     ccdc.crystal.Crystal --> np.array shape (m,3), np.array shape (3,3)
@@ -194,16 +183,22 @@ def motif_cell_fromCrystal(crystal):
 def motif_cell_fromCIF(path):
     """
     Returns cartesian motif(s) and cell(s) in cif for use in the functions in this file.
-    If cif contains 1 crystal, returns (motif, cell)
-    If cif contains > 1 crystal, returns a list [(motif1, cell1), ...]
+    Returns a list [(motif1, cell1), ...] for all structures in the cif file. 
     """
     from ccdc import io
     reader = io.CrystalReader(path)
-    if len(reader) == 1:
-        return motif_cell_fromCrystal(reader[0])
-    else:
-        return [motif_cell_fromCrystal(crystal) for crystal in reader]
+    return [motif_cell_fromCrystal(crystal) for crystal in reader]
 
+def AMD_estimate(motif, cell, k):
+    """
+    Returns an estimate of AMD(motif, cell, k), given by
+    cbrt((3 * Vol(cell) * k) / (4 * pi * m))
+    where m = motif.shape[0]
+    """
+    m = motif.shape[0]
+    det = np.linalg.det(cell)
+    c = np.cbrt((3 * det) / (4 * np.pi * m))
+    return [np.cbrt(x) * c for x in range(k+1)]
 
 if __name__ == "__main__":
 

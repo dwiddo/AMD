@@ -7,6 +7,11 @@ AMD.py contains a collection of functions for computing the PDD, AMD and WPD of 
 - WPD requires networkx if tol is not None.
 - motif_cell_fromCIF requires ccdc and ase (used to read in .cif files).
 
+Use the function motif_cell_fromCIF() to read in from a .cif file. Note that it returns a list of motifs and cells, so even if the file contains one structure, the motif and cell are extracted with
+```sh
+motif, cell = motif_cell_fromCIF(path)[0]
+```
+
 ### Example uses
 
 If not running from AMD.py, import the relevant functions. Then
@@ -14,7 +19,7 @@ If not running from AMD.py, import the relevant functions. Then
 -  One CIF, one crystal:
     ```sh
     path = 'path/to/my/cif/file.cif' 
-    motif, cell = motif_cell_fromCIF(path)
+    motif, cell = motif_cell_fromCIF(path)[0]
     amd = AMD(motif, cell, 1000)
     ```
 - One CIF, many crystals:
@@ -29,7 +34,7 @@ If not running from AMD.py, import the relevant functions. Then
     amds = []
     for file in os.listdir(path):
         if file.endswith('.cif'):
-            motif, cell = motif_cell_fromCIF(os.path.join(path, file))
+            motif, cell = motif_cell_fromCIF(os.path.join(path, file))[0]
             amds.append(AMD(motif, cell, 1000))
     ```
 - From ccdc Crystal object:
@@ -50,7 +55,8 @@ If not running from AMD.py, import the relevant functions. Then
     amd = AMD(motif, cell, 1000)
     ```
 
-### Notes on WPD
+### Notes
+
 The function WPD(motif, cell, k) returns a single np.ndarray of shape (m,k+1) where m=motif.shape[0]. The first column contains the weights for the WPD. To separate the weights from the rest of the matrix, do
 ```sh
 x = WPD(motif, cell, k)
