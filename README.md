@@ -1,6 +1,6 @@
 # AMD.py
  
-AMD.py contains a collection of functions for computing PDD, AMD and WPD from crystal structures. PDD, AMD and WPD all accept (motif, cell, k) where motif and cell are in cartesian form. If reading from a CIF, use the helper function motif_cell_fromCIF(path) to extract the relevant data. (ase required)
+AMD.py contains a collection of functions for computing the PDD, AMD and WPD of crystal structures. PDD, AMD and WPD all accept (motif, cell, k) where motif and cell are in cartesian form and k>0 is an integer. If reading from a CIF, use the helper function motif_cell_fromCIF(path) to extract the relevant data. (ase required)
 
 ### Requirements: 
 - All functions require numpy and scipy. 
@@ -8,6 +8,11 @@ AMD.py contains a collection of functions for computing PDD, AMD and WPD from cr
 - motif_cell_fromCIF requires ccdc and ase.
 
 ### Example uses with .CIFs
+
+If not running from AMD.py, 
+```sh
+from AMD import AMD, motif_cell_fromCIF
+```
 
 -  One CIF, one crystal:
     ```sh
