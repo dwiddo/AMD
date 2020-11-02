@@ -7,12 +7,9 @@ AMD.py contains a collection of functions for computing the PDD, AMD and WPD of 
 - WPD requires networkx. 
 - motif_cell_fromCIF requires ccdc and ase.
 
-### Example uses with .CIFs
+### Example uses
 
-If not running from AMD.py, 
-```sh
-from AMD import AMD, motif_cell_fromCIF
-```
+If not running from AMD.py, import the relevant functions. Then
 
 -  One CIF, one crystal:
     ```sh
@@ -34,6 +31,23 @@ from AMD import AMD, motif_cell_fromCIF
         if file.endswith('.cif'):
             motif, cell = motif_cell_fromCIF(os.path.join(path, file))
             amds.append(AMD(motif, cell, 1000))
+    ```
+- From ccdc Crystal:
+    ```sh
+    motif, cell = motif_cell_fromCrystal(crystal)
+    amd = AMD(motif, cell, 1000)
+    ```
+- From ase Atoms:
+    ```sh
+    motif = atoms.get_positions()
+    cell = atoms.get_cell()
+    amd = AMD(motif, cell, 1000)
+    ```
+- From pymatgen Structure:
+    ```sh
+    motif = structure.cart_coords
+    cell = structure.lattice.matrix
+    amd = AMD(motif, cell, 1000)
     ```
 
 ### Notes on WPD
