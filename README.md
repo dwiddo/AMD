@@ -7,7 +7,7 @@ AMD.py contains a collection of functions for computing the PDD, AMD and WPD of 
 - WPD requires networkx if tol is not None.
 - motif_cell_fromCIF requires ccdc and ase (used to read in .cif files).
 
-Use the function motif_cell_fromCIF() to read in from a .cif file. Note that it returns a list of motifs and cells, so even if the file contains one structure, the motif and cell are extracted with
+Use the function motif_cell_fromCIF() to read in relevant data from a .cif file. Note that it returns a list of motifs and cells, so even if the file contains one structure, the only motif and cell are extracted with
 ```sh
 motif, cell = motif_cell_fromCIF(path)[0]
 ```
