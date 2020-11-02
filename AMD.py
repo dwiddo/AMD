@@ -6,7 +6,6 @@ import numpy as np
 from scipy.spatial import cKDTree
 from collections import defaultdict
 from itertools import product
-from numba import jit
 
 def dist(p):
     return sum(x**2 for x in p)
