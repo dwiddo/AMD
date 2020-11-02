@@ -82,12 +82,17 @@ def PDD(motif, cell, k):
     """
 
     # generates point cloud in concentric layers
-    g = generate_concentric_lattice(motif, cell)    
-    cloud = next(g)
+    g = generate_concentric_lattice(motif, cell)
+    l = next(g)
+    points = l.shape[0]
+    cloud = [l]
 
     # get at least k points in the cloud
-    while cloud.shape[0] <= k:      
-        cloud = np.append(cloud, next(g), axis=0)
+    while points <= k:
+        l = next(g)
+        points += l.shape[0]
+        cloud.append(l)
+    cloud = np.concatenate(cloud)
 
     # nearest neighbour distance query
     tree = cKDTree(cloud, compact_nodes=False, balanced_tree=False)
