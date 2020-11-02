@@ -225,4 +225,4 @@ if __name__ == "__main__":
 
     """
     motif, cell = motif_cell_fromCIF("Data\CIFs\T2_simulated\job_00001.cif")
-    print(WPD(motif, cell, 200))
+    print(WPD(motif, cell, 300))
