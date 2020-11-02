@@ -4,7 +4,7 @@ AMD.py contains a collection of functions for computing the PDD, AMD and WPD of 
 
 ### Requirements: 
 - All functions require numpy and scipy. 
-- WPD requires networkx. 
+- WPD requires networkx if tol is not None.
 - motif_cell_fromCIF requires ccdc and ase (used to read in .cif files).
 
 ### Example uses

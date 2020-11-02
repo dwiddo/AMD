@@ -139,14 +139,13 @@ def WPD(motif, cell, k, tol=None):
     Returns:
         ndarray shape (m,k+1) where m = motif.shape[0].
     """
-    from collections import Counter
-    import networkx as nx
-    from scipy.spatial.distance import pdist, squareform
 
     pdd = PDD(motif, cell, k)
     M = pdd.shape[0]
     wpd = []
     if tol is not None:
+        import networkx as nx
+        from scipy.spatial.distance import pdist, squareform
         d = pdist(pdd)
         d[d==0] = -1
         distances = squareform(d)
@@ -162,6 +161,7 @@ def WPD(motif, cell, k, tol=None):
             row = [*pdd[index], 1 / M]
             wpd.append(row)
     else:
+        from collections import Counter
         counter = Counter([tuple(x) for x in pdd])
         for c in counter:
             wpd.append([*c, counter[c] / M])
