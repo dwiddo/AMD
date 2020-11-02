@@ -32,18 +32,18 @@ If not running from AMD.py, import the relevant functions. Then
             motif, cell = motif_cell_fromCIF(os.path.join(path, file))
             amds.append(AMD(motif, cell, 1000))
     ```
-- From ccdc Crystal:
+- From ccdc Crystal object:
     ```sh
     motif, cell = motif_cell_fromCrystal(crystal)
     amd = AMD(motif, cell, 1000)
     ```
-- From ase Atoms:
+- From ase Atoms object:
     ```sh
     motif = atoms.get_positions()
     cell = atoms.get_cell()
     amd = AMD(motif, cell, 1000)
     ```
-- From pymatgen Structure:
+- From pymatgen Structure object:
     ```sh
     motif = structure.cart_coords
     cell = structure.lattice.matrix
