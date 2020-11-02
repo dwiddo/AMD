@@ -79,13 +79,12 @@ def PDD(motif, cell, k):
         k: no of columns in output. int >= 1
     Returns:
         ndarray shape (m,k) where m = motif.shape[0].
-
     """
 
     # generates point cloud in concentric layers
     g = generate_concentric_lattice(motif, cell)    
     cloud = next(g)
-    
+
     # get at least k points in the cloud
     while cloud.shape[0] <= k:      
         cloud = np.append(cloud, next(g), axis=0)
@@ -190,8 +189,7 @@ def motif_cell_fromCrystal(crystal):
 
 def motif_cell_fromCIF(path):
     """
-    Returns cartesian motif(s) and cell(s) in cif
-    for use in the functions in this file.
+    Returns cartesian motif(s) and cell(s) in cif for use in the functions in this file.
     If cif contains 1 crystal, returns (motif, cell)
     If cif contains > 1 crystal, returns a list [(motif1, cell1), ...]
     """
