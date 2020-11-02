@@ -6,6 +6,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 from collections import defaultdict
 from itertools import product
+from numba import jit
 
 def dist(p):
     return sum(x**2 for x in p)
@@ -81,21 +82,26 @@ def PDD(motif, cell, k):
 
     """
 
-    g = generate_concentric_lattice(motif, cell)
-
+    # generates point cloud in concentric layers
+    g = generate_concentric_lattice(motif, cell)    
     cloud = next(g)
-    while cloud.shape[0] <= k:
+    
+    # get at least k points in the cloud
+    while cloud.shape[0] <= k:      
         cloud = np.append(cloud, next(g), axis=0)
 
+    # nearest neighbour distance query
     tree = cKDTree(cloud, compact_nodes=False, balanced_tree=False)
     d_, _ = tree.query(motif, k=k+1, n_jobs=-1)
     d = np.zeros_like(d_)
 
+    # keep generating layers and getting distances until they don't change 
     while not np.array_equal(d, d_):
         d = np.copy(d_)
         cloud = np.append(cloud, next(g), axis=0)
         tree = cKDTree(cloud, compact_nodes=False, balanced_tree=False)
         d_, _ = tree.query(motif, k=k+1, n_jobs=-1)
+
     return d_[:,1:]
 
 def AMD(motif, cell, k):
@@ -199,30 +205,6 @@ def motif_cell_fromCIF(path):
 
 if __name__ == "__main__":
 
-    """
-    PDD, AMD and WPD all accept (motif, cell, k)
-    where motif and cell are in cartesian form. 
-
-    If reading from a CIF, use the helper function motif_cell_fromCIF(path)
-    to extract the relevant data. (ase required)
-
-    Example uses:
-        One CIF, one crystal:
-            >>> path = 'path/to/my/cif/file.cif' 
-            >>> motif, cell = motif_cell_fromCIF(path)
-            >>> amd = AMD(motif, cell, 1000)
-        One CIF, many crystals:
-            >>> path = 'path/to/my/cif/file.cif' 
-            >>> amds = [AMD(motif, cell, 1000) for motif, cell in motif_cell_fromCIF(path)]
-        Many CIFs (one crystal each) in a directory:
-            >>> import os
-            >>> path = 'path/to/my/cifs'
-            >>> amds = []
-            >>> for file in os.listdir(path):
-            >>>     if file.endswith('.cif'):
-            >>>         motif, cell = motif_cell_fromCIF(os.path.join(path, file))
-            >>>         amds.append(AMD(motif, cell, 1000))
-
-    """
-    motif, cell = motif_cell_fromCIF("Data\CIFs\T2_simulated\job_00001.cif")
-    print(WPD(motif, cell, 300))
+    cell = np.array([[1,0,0],[0,1,0],[0,0,1]])
+    motif = np.random.uniform(size=(5,3))   # random motif with 5 points
+    print(AMD(motif, cell, 100))
