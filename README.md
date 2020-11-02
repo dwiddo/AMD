@@ -11,6 +11,15 @@ Use the function motif_cell_fromCIF() to read in relevant data from a .cif file.
 ```sh
 motif, cell = motif_cell_fromCIF(path)[0]
 ```
+but if the file has multiple structures, we can use Python's loop syntax:
+```sh
+for motif, cell in motif_cell_fromCIF(path):
+    code...
+```
+for example,
+```sh
+amds = [AMD(m, c, 1000) for m, c in motif_cell_fromCIF(path)]
+```
 
 ### Example uses
 
