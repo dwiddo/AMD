@@ -109,7 +109,7 @@ def PDD(motif, cell, k):
 
 def AMD(motif, cell, k):
     """
-    Returns PDD(t;k).
+    Returns AMD(t;k).
 
     Parameters:
         motif: Cartesian coords of motif points. ndarray of shape (m,3)

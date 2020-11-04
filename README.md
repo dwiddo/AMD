@@ -23,7 +23,10 @@ amds = [AMD(m, c, 1000) for m, c in motif_cell_fromCIF(path)]
 
 ### Example uses
 
-If not running from AMD.py, import the relevant functions. Then
+If not running from AMD.py, import with
+```sh
+from AMD import AMD, motif_cell_fromCIF
+```
 
 -  One CIF, one crystal:
     ```sh
