@@ -80,12 +80,12 @@ WPD also accepts an optional tol parameter (default tol=None). If tol=None, rows
 
 ### Earth mover's distance between WPDs
 Requires [Wasserstein.py](https://www.dropbox.com/s/hzd2phmmitx6q0a/Wasserstein.py?dl=0). The function ```Wasserstein.wasserstein(w1, w2, dm)```  accepts two sets of weights and a distance matrix, returning the Wasserstein distance (earth mover's distance) between two suitable sets. Implementing the EMD between WPDs is just a few lines, 
-    ```
-    from scipy.spatial.distance import cdist
-    from Wasserstein import wasserstein
-    dm = cdist(wpd[:, 1:], wpd_[:, 1:], metric='euclidean')
-    emd = wasserstein(wpd[:, 0], wpd_[:, 0], dm)
-    ```
+```py
+from scipy.spatial.distance import cdist
+from Wasserstein import wasserstein
+dm = cdist(wpd[:, 1:], wpd_[:, 1:], metric='euclidean')
+emd = wasserstein(wpd[:, 0], wpd_[:, 0], dm)
+```
 this is the code in the helper function ```WPD_EMD(wpd, wpd_)``` which accepts two WPDs as returned by ``` WPD(motif, cell, k)```.
 - Comparing two crystals:
 
