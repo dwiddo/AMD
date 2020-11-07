@@ -8,39 +8,39 @@ AMD.py contains a collection of functions for computing the PDD, AMD and WPD of 
 - motif_cell_fromCIF requires ccdc and ase (used to read in .cif files).
 
 Use the function motif_cell_fromCIF() to read in relevant data from a .cif file. Note that it returns a list of motifs and cells, so even if the file contains one structure, the only motif and cell are extracted with
-```sh
+```py
 motif, cell = motif_cell_fromCIF(path)[0]
 ```
 but if the file has multiple structures, you can use Python's loop syntax:
-```sh
+```py
 for motif, cell in motif_cell_fromCIF(path):
     amd = AMD(motif, cell, 1000)
 ```
 or
-```sh
+```py
 amds = [AMD(m, c, 1000) for m, c in motif_cell_fromCIF(path)]
 ```
 
 ### Example uses
 
 If not running from AMD.py, import with
-```sh
+```py
 from AMD import AMD, motif_cell_fromCIF
 ```
 
 -  One CIF, one crystal:
-    ```sh
+    ```py
     path = 'path/to/my/cif/file.cif' 
     motif, cell = motif_cell_fromCIF(path)[0]
     amd = AMD(motif, cell, 1000)
     ```
 - One CIF, many crystals:
-    ```sh
+    ```py
     path = 'path/to/my/cif/file.cif' 
     amds = [AMD(motif, cell, 1000) for motif, cell in motif_cell_fromCIF(path)]
     ```
 - Many CIFs (one crystal each) in a directory:
-    ```sh
+    ```py
     import os
     path = 'path/to/my/cifs'
     amds = []
@@ -50,18 +50,18 @@ from AMD import AMD, motif_cell_fromCIF
             amds.append(AMD(motif, cell, 1000))
     ```
 - From ccdc Crystal object:
-    ```sh
+    ```py
     motif, cell = motif_cell_fromCrystal(crystal)
     amd = AMD(motif, cell, 1000)
     ```
 - From ase Atoms object:
-    ```sh
+    ```py
     motif = atoms.get_positions()
     cell = atoms.get_cell()
     amd = AMD(motif, cell, 1000)
     ```
 - From pymatgen Structure object:
-    ```sh
+    ```py
     motif = structure.cart_coords
     cell = structure.lattice.matrix
     amd = AMD(motif, cell, 1000)
@@ -70,7 +70,7 @@ from AMD import AMD, motif_cell_fromCIF
 ### WPD Notes
 
 The function WPD(motif, cell, k) returns a single np.ndarray of shape (m,k+1) where m=motif.shape[0]. The first column contains the weights for the WPD. To separate the weights from the rest of the matrix, do
-```sh
+```py
 x = WPD(motif, cell, k)
 weights = x[:,0]
 distances = x[:,1:]
@@ -79,7 +79,14 @@ distances = x[:,1:]
 WPD also accepts an optional tol parameter (default tol=None). If tol=None, rows are grouped only if they are exactly equal. Otherwise, rows are grouped when they are closer to each other than tol (Euclidean distance). It is not true that for any two rows in the same group, their distance is less than tol. Rather, for any row in a group there exists another row in the same group less than tol away.
 
 ### Earth mover's distance between WPDs
-Requires [Wasserstein.py](https://www.dropbox.com/s/hzd2phmmitx6q0a/Wasserstein.py?dl=0). The function ``` WPD_EMD(wpd, wpd_)``` uses Wasserstein which calculates the EMD given two weight vectors and a distance matrix.
+Requires [Wasserstein.py](https://www.dropbox.com/s/hzd2phmmitx6q0a/Wasserstein.py?dl=0). The function ```Wasserstein.wasserstein(w1, w2, dm)```  accepts two sets of weights and a distance matrix, returning the Wasserstein distance (earth mover's distance) between two suitable sets. Implementing the EMD between WPDs is just a few lines, 
+    ```
+    from scipy.spatial.distance import cdist
+    from Wasserstein import wasserstein
+    dm = cdist(wpd[:, 1:], wpd_[:, 1:], metric='euclidean')
+    emd = wasserstein(wpd[:, 0], wpd_[:, 0], dm)
+    ```
+this is the code in the helper function ```WPD_EMD(wpd, wpd_)``` which accepts two WPDs as returned by ``` WPD(motif, cell, k)```.
 - Comparing two crystals:
 
     If the two crystals are in separate cifs, or are ase Atoms, pymatgen Structure or ccdc Crystal objects, see above how to extract the Cartesian motifs and cells. Then (for an integer k),

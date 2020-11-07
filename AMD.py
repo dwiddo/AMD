@@ -2,11 +2,11 @@
 Collection of functions to caculate PPD(k), AMD(k) and WPD(k).
 """
 
+from itertools import product
+from collections import defaultdict, Counter
 import numpy as np
 from scipy.spatial import cKDTree
-from collections import defaultdict
-from itertools import product
-from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist, pdist, squareform
 
 def dist(p):
     return sum(x**2 for x in p)
@@ -16,7 +16,7 @@ def generate_N3():
     generates batches of positive integer lattice points in 3D
     ordered by distance to the origin.
     """
-    ymax = defaultdict(int) 
+    ymax = defaultdict(int)
     d = 0
     while True:
         yieldable = []
@@ -46,10 +46,10 @@ def generate_Z3():
         if p is not None:
             if p[0]: yield -p[0], p[1], p[2]
             if p[1]: yield p[0], -p[1], p[2]
-            if p[2]: yield p[0], p[1], -p[2] 
+            if p[2]: yield p[0], p[1], -p[2]
             if p[0] and p[1]: yield -p[0], -p[1], p[2]
             if p[0] and p[2]: yield -p[0], p[1], -p[2]
-            if p[1] and p[2]: yield p[0], -p[1], -p[2] 
+            if p[1] and p[2]: yield p[0], -p[1], -p[2]
             if p[0] and p[1] and p[2]: yield -p[0], -p[1], -p[2]
 
 def generate_concentric_cloud(motif, cell):
@@ -94,21 +94,19 @@ def PDD(motif, cell, k):
         cloud.append(l)
     cloud = np.concatenate(cloud)
 
-
-
     # nearest neighbour distance query
     tree = cKDTree(cloud, compact_nodes=False, balanced_tree=False)
     d_, _ = tree.query(motif, k=k+1, n_jobs=-1)
     d = np.zeros_like(d_)
 
-    # keep generating layers and getting distances until they don't change 
+    # keep generating layers and getting distances until they don't change
     while not np.array_equal(d, d_):
         d = np.copy(d_)
         cloud = np.append(cloud, next(g), axis=0)
         tree = cKDTree(cloud, compact_nodes=False, balanced_tree=False)
         d_, _ = tree.query(motif, k=k+1, n_jobs=-1)
 
-    return d_[:,1:]
+    return d_[:, 1:]
 
 def AMD(motif, cell, k):
     """
@@ -129,9 +127,9 @@ def WPD(motif, cell, k, tol=None):
         >>> x = WPD(motif, cell, k)
         >>> weights = x[:,0]
         >>> distances = x[:,1:]
-    If tol is not None, Rows are grouped together such that any 
-    row in a group is less than tol away (Euclidean distance) 
-    from at least one other row in the same group. 
+    If tol is not None, Rows are grouped together such that any
+    row in a group is less than tol away (Euclidean distance)
+    from at least one other row in the same group.
     If tol=None, rows must be exactly equal to be grouped.
 
     Parameters:
@@ -147,9 +145,8 @@ def WPD(motif, cell, k, tol=None):
     wpd = []
     if tol is not None:
         import networkx as nx
-        from scipy.spatial.distance import pdist, squareform
         d = pdist(pdd)
-        d[d==0] = -1
+        d[d == 0] = -1
         distances = squareform(d)
         distances[distances >= tol] = 0
         indexes = np.argwhere(np.triu(distances))
@@ -163,13 +160,12 @@ def WPD(motif, cell, k, tol=None):
             row = [*pdd[index], 1 / M]
             wpd.append(row)
     else:
-        from collections import Counter
         counter = Counter([tuple(x) for x in pdd])
         for c in counter:
             wpd.append([*c, counter[c] / M])
     wpd.sort()
     wpd = np.array(wpd)
-    wpd = np.concatenate((wpd[:,-1:], wpd[:,:-1]), axis=1)
+    wpd = np.concatenate((wpd[:, -1:], wpd[:, :-1]), axis=1)
 
     return np.array(wpd)
 
@@ -178,15 +174,16 @@ def motif_cell_fromCrystal(crystal):
     ccdc.crystal.Crystal --> np.array shape (m,3), np.array shape (3,3)
     """
     from ase.geometry import cellpar_to_cell
-    motif = np.array([[a.coordinates.x, a.coordinates.y, a.coordinates.z] 
-                           for a in crystal.molecule.atoms])
+    motif = np.array([[a.coordinates.x, a.coordinates.y, a.coordinates.z]
+                      for a in crystal.molecule.atoms])
     cell = cellpar_to_cell([*crystal.cell_lengths, *crystal.cell_angles])
     return motif, cell
 
 def motif_cell_fromCIF(path):
     """
-    Returns cartesian motif(s) and cell(s) in cif for use in the functions in this file.
-    Returns a list [(motif1, cell1), ...] for all structures in the cif file. 
+    Returns cartesian motif(s) and cell(s) in cif for use in the functions in
+    this file. Returns a list [(motif1, cell1), ...] for all structures in the
+    cif file.
     """
     from ccdc import io
     reader = io.CrystalReader(path)
@@ -204,11 +201,18 @@ def AMD_estimate(motif, cell, k):
     return [np.cbrt(x) * c for x in range(k+1)]
 
 def WPD_EMD(wpd, wpd_):
+    """
+    Takes two wpd matrices (as returned by WPD()) and returns the Earth mover's
+    distance between them.
+    """
     from Wasserstein import wasserstein
-    dm = cdist(wpd[:,1:], wpd_[:,1:], metric='euclidean')
-    return wasserstein(wpd[:,0], wpd_[:,0], dm)
+    dm = cdist(wpd[:, 1:], wpd_[:, 1:], metric='euclidean')
+    return wasserstein(wpd[:, 0], wpd_[:, 0], dm)
+
+def example():
+    cell = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    motif = np.random.uniform(size=(5, 3))   # random motif with 5 points
+    print(AMD(motif, cell, 100))
 
 if __name__ == "__main__":
-    cell = np.array([[1,0,0],[0,1,0],[0,0,1]])
-    motif = np.random.uniform(size=(5,3))   # random motif with 5 points
-    print(AMD(motif, cell, 100))
+    example()
