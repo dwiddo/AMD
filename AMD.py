@@ -6,6 +6,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 from collections import defaultdict
 from itertools import product
+from scipy.spatial.distance import cdist
 
 def dist(p):
     return sum(x**2 for x in p)
@@ -70,7 +71,7 @@ def generate_concentric_cloud(motif, cell):
 
 def PDD(motif, cell, k):
     """
-    Returns PDD(t;k).
+    Returns PDD(k).
 
     Parameters:
         motif: Cartesian coords of motif points. ndarray of shape (m,3)
@@ -93,6 +94,8 @@ def PDD(motif, cell, k):
         cloud.append(l)
     cloud = np.concatenate(cloud)
 
+
+
     # nearest neighbour distance query
     tree = cKDTree(cloud, compact_nodes=False, balanced_tree=False)
     d_, _ = tree.query(motif, k=k+1, n_jobs=-1)
@@ -109,7 +112,7 @@ def PDD(motif, cell, k):
 
 def AMD(motif, cell, k):
     """
-    Returns AMD(t;k).
+    Returns AMD(k).
 
     Parameters:
         motif: Cartesian coords of motif points. ndarray of shape (m,3)
@@ -200,8 +203,12 @@ def AMD_estimate(motif, cell, k):
     c = np.cbrt((3 * det) / (4 * np.pi * m))
     return [np.cbrt(x) * c for x in range(k+1)]
 
-if __name__ == "__main__":
+def WPD_EMD(wpd, wpd_):
+    from Wasserstein import wasserstein
+    dm = cdist(wpd[:,1:], wpd_[:,1:], metric='euclidean')
+    return wasserstein(wpd[:,0], wpd_[:,0], dm)
 
+if __name__ == "__main__":
     cell = np.array([[1,0,0],[0,1,0],[0,0,1]])
     motif = np.random.uniform(size=(5,3))   # random motif with 5 points
     print(AMD(motif, cell, 100))
