@@ -81,6 +81,7 @@ WPD also accepts an optional tol parameter (default tol=None). If tol=None, rows
 ### Earth mover's distance between WPDs
 Requires [Wasserstein.py](https://www.dropbox.com/s/hzd2phmmitx6q0a/Wasserstein.py?dl=0). The function ``` WPD_EMD(wpd, wpd_)``` uses Wasserstein which calculates the EMD given two weight vectors and a distance matrix.
 - Comparing two crystals
+
     If the two crystals are in separate cifs, or are ase Atoms, pymatgen Structure or ccdc Crystal objects, see above how to extract the Cartesian motifs and cells. Then (for an integer k),
     ```py
     wpd = WPD(motif, cell, k)
@@ -88,6 +89,7 @@ Requires [Wasserstein.py](https://www.dropbox.com/s/hzd2phmmitx6q0a/Wasserstein.
     emd = WPD_EMD(wpd, wpd_)
     ```
 - Comparing many crystals
+
     The examples above explain how to extract many crystals and get their WPDs, for example given one cif with many crystals
     ```py
     wpds = [WPD(m, c, 100) for m, c in motif_cell_fromCIF(path)]
