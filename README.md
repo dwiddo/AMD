@@ -6,6 +6,7 @@ AMD.py contains a collection of functions for computing the PDD, AMD and WPD of 
 - All functions require numpy and scipy. 
 - WPD requires networkx if tol is not None.
 - motif_cell_fromCIF requires ccdc and ase (used to read in .cif files).
+- WPD_EMD, or in general comparing WPDs with earth mover's distance, requires [Wasserstein.py](https://www.dropbox.com/s/hzd2phmmitx6q0a/Wasserstein.py?dl=0).
 
 Use the function motif_cell_fromCIF() to read in relevant data from a .cif file. Note that it returns a list of motifs and cells, so even if the file contains one structure, the only motif and cell are extracted with
 ```py
@@ -86,7 +87,7 @@ from Wasserstein import wasserstein
 dm = cdist(wpd[:, 1:], wpd_[:, 1:], metric='euclidean')
 emd = wasserstein(wpd[:, 0], wpd_[:, 0], dm)
 ```
-this is the code in the helper function ```WPD_EMD(wpd, wpd_)``` which accepts two WPDs as returned by ``` WPD(motif, cell, k)```.
+this is the code in the helper function ```WPD_EMD(wpd, wpd_)``` which accepts two WPDs as returned by ``` WPD()```.
 - Comparing two crystals:
 
     If the two crystals are in separate cifs, or are ase Atoms, pymatgen Structure or ccdc Crystal objects, see above how to extract the Cartesian motifs and cells. Then (for an integer k),
