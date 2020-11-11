@@ -169,25 +169,31 @@ def WPD(motif, cell, k, tol=None):
 
     return np.array(wpd)
 
-def motif_cell_fromCrystal(crystal):
+def motif_cell_fromCrystal(crystal, fill_cell=False):
     """
-    ccdc.crystal.Crystal --> np.array shape (m,3), np.array shape (3,3)
+    ccdc.crystal.Crystal --> np.array shape (m,3), np.array shape (3,3).
+    Optional param fill_cell (default False) will expand an asymmetric unit to
+    fill the unit cell. This is necessary if the .cif contains an asymmetrix unit
+    that is expanded by symmetry operations.
     """
     from ase.geometry import cellpar_to_cell
-    motif = np.array([[a.coordinates.x, a.coordinates.y, a.coordinates.z]
-                      for a in crystal.molecule.atoms])
     cell = cellpar_to_cell([*crystal.cell_lengths, *crystal.cell_angles])
+    mol = crystal.molecule if not fill_cell else crystal.packing(inclusion='OnlyAtomsIncluded')
+    motif = np.array([[a.coordinates.x, a.coordinates.y, a.coordinates.z] for a in mol.atoms])
     return motif, cell
 
-def motif_cell_fromCIF(path):
+def motif_cell_fromCIF(path, fill_cell=False):
     """
     Returns cartesian motif(s) and cell(s) in cif for use in the functions in
     this file. Returns a list [(motif1, cell1), ...] for all structures in the
     cif file.
+    Optional param fill_cell (default False) will expand an asymmetric unit to
+    fill the unit cell. This is necessary if the .cif contains an asymmetrix unit
+    that is expanded by symmetry operations.
     """
     from ccdc import io
     reader = io.CrystalReader(path)
-    return [motif_cell_fromCrystal(crystal) for crystal in reader]
+    return [motif_cell_fromCrystal(crystal, fill_cell=fill_cell) for crystal in reader]
 
 def AMD_estimate(motif, cell, k):
     """
