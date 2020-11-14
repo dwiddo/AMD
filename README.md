@@ -21,7 +21,7 @@ or
 ```py
 amds = [AMD(m, c, 1000) for m, c in motif_cell_fromCIF(path)]
 ```
-Note that if the .cif(s) have an asymmetric unit and symmetry operations, i.e, the list of atomic sites in the .cif is not all sites in the unit cell, you should use the optional parameter ``` fill_cell=True``` in ```motif_cell_fromCIF``` to pack the unit cell (this just passes the crystal through ```ccdc.crystal.Crystal.packing()```). 
+If the cif(s) has an asymmetric unit and symmetry operations, i.e, the list of atomic sites in the cif is not all sites in the unit cell, use the optional parameter ``` fill_cell=True``` in ```motif_cell_fromCIF``` to pack the unit cell (this just passes the crystal through ```ccdc.crystal.Crystal.packing()```). 
 
 ### Example uses
 
@@ -74,8 +74,8 @@ from AMD import AMD, motif_cell_fromCIF
 The function WPD(motif, cell, k) returns a single np.ndarray of shape (m,k+1) where m=motif.shape[0]. The first column contains the weights for the WPD. To separate the weights from the rest of the matrix, do
 ```py
 x = WPD(motif, cell, k)
-weights = x[:,0]
-distances = x[:,1:]
+weights = x[:, 0]
+distances = x[:, 1:]
 ```
 
 WPD also accepts an optional tol parameter (default tol=None). If tol=None, rows are grouped only if they are exactly equal. Otherwise, rows are grouped when they are closer to each other than tol (Euclidean distance). It is not true that for any two rows in the same group, their distance is less than tol. Rather, for any row in a group there exists another row in the same group less than tol away.
@@ -108,7 +108,7 @@ this is the code in the helper function ```WPD_EMD(wpd, wpd_)``` which accepts t
     from itertools import combinations
     flat_dm = [WPD_EMD(wpd, wpd_) for wpd, wpd_ in combinations(wpds, 2)]
     ```
-    ``` flat_dm``` is a condensed distance vector (as described [in the scipy docs](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.squareform.html#scipy.spatial.distance.squareform)) containing all the pairwise distances between wpds. To get a symmetric square distance matrix, use 
+    then ``` flat_dm``` is a condensed distance vector (as described [in the scipy docs](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.squareform.html#scipy.spatial.distance.squareform)) containing all the pairwise distances between wpds. To get a symmetric square distance matrix, use
     ```py
     from scipy.spatial.distance import squareform
     square_dm = squareform(np.array(flat_dm))
