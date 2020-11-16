@@ -173,8 +173,8 @@ def motif_cell_fromCrystal(crystal, fill_cell=False):
     """
     ccdc.crystal.Crystal --> np.array shape (m,3), np.array shape (3,3).
     Optional param fill_cell (default False) will expand an asymmetric unit to
-    fill the unit cell. This is necessary if the .cif contains an asymmetrix unit
-    that is expanded by symmetry operations.
+    fill the unit cell. This is necessary if the .cif contains an asymmetric unit
+    that needs to be expanded by symmetry operations.
     """
     from ase.geometry import cellpar_to_cell
     cell = cellpar_to_cell([*crystal.cell_lengths, *crystal.cell_angles])
@@ -184,6 +184,7 @@ def motif_cell_fromCrystal(crystal, fill_cell=False):
 
 def motif_cell_fromCIF(path, fill_cell=False):
     """
+    str (path to cif) --> np.array(s) shape (m,3), np.array(s) shape (3,3).
     Returns cartesian motif(s) and cell(s) in cif for use in the functions in
     this file. Returns a list [(motif1, cell1), ...] for all structures in the
     cif file.
