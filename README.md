@@ -21,7 +21,7 @@ or
 ```py
 amds = [AMD(m, c, 1000) for m, c in motif_cell_fromCIF(path)]
 ```
-**If the cif(s) has an asymmetric unit and symmetry operations**, i.e, the list of atomic sites in the cif is not all sites in the unit cell, use the optional parameter ``` fill_cell=True``` in ```motif_cell_fromCIF``` to pack the unit cell (this just passes the crystal through ```ccdc.crystal.Crystal.packing()```). 
+**If the cif(s) has an asymmetric unit and symmetry operations**, i.e, the list of atomic sites in the cif is not all sites in the unit cell, use the optional parameter ``` fill_cell=True``` in ```motif_cell_fromCIF``` to pack the unit cell (this just passes the crystal through ```ccdc.crystal.Crystal.packing()```). **Function will return incorrect values if this is missed.**
 
 ### Example uses
 
