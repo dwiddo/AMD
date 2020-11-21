@@ -21,7 +21,13 @@ or
 ```py
 amds = [AMD(m, c, 1000) for m, c in motif_cell_fromCIF(path)]
 ```
-**If a cif has an asymmetric unit and symmetry operations**, i.e, the list of atomic sites in the cif is not all sites in the unit cell, use the optional parameter ``` fill_cell=True``` in ```motif_cell_fromCIF``` to pack the unit cell (this just passes the crystal through ```ccdc.crystal.Crystal.packing()```). **Functions will return incorrect values if this is missed.**
+**Important: Functions will return incorrect values if your inputs don't abide by the following:**
+- ```motif``` must consist of all atomic positions in the unit cell. If a .cif has an asymmetric unit and symmetry operations, use the optional parameter ``` fill_cell=True``` in ```motif_cell_fromCIF``` to pack the unit cell (this just passes the crystal through ```ccdc.crystal.Crystal.packing()```). Examples below don't include this parameter, but you may have to.
+- ```motif``` must consist exclusively of points in the unit cell. Many .cifs list atomic positions outside the cell. For now (while input validation is not implimented) this can be done manually with
+    ```py
+    motif = np.mod(motif @ np.linalg.inv(cell), 1) @ cell
+    ``` 
+    which just wraps all points into the unit cell. It appears the optional parameter ```fill_cell=True``` also works for this purpose. 
 
 ### Example uses
 
