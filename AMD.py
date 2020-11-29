@@ -11,66 +11,6 @@ from scipy.spatial.distance import cdist, pdist, squareform
 def dist(p):
     return sum(x**2 for x in p)
 
-'''
-def generate_N3():
-    """
-    generates batches of positive integer lattice points in 3D
-    ordered by distance to the origin.
-    """
-    ymax = defaultdict(int)
-    d = 0
-    while True:
-        yieldable = []
-        while True:
-            batch = []
-            for x in product(range(d+1), repeat=2):
-                pt = x + (ymax[x],)
-                if dist(pt) <= d**2:
-                    batch.append(pt)
-                    ymax[x] += 1
-            if not batch:
-                break
-            yieldable += batch
-        yieldable.sort(key=dist)
-        for p in yieldable:
-            yield p
-        d += 1
-        yield None
-
-def generate_Z3():
-    """
-    generates all integer lattice points in batches
-    ordered by distance to the origin
-    """
-    for p in generate_N3():
-        yield p
-        if p is not None:
-            if p[0]: yield -p[0], p[1], p[2]
-            if p[1]: yield p[0], -p[1], p[2]
-            if p[2]: yield p[0], p[1], -p[2]
-            if p[0] and p[1]: yield -p[0], -p[1], p[2]
-            if p[0] and p[2]: yield -p[0], p[1], -p[2]
-            if p[1] and p[2]: yield p[0], -p[1], -p[2]
-            if p[0] and p[1] and p[2]: yield -p[0], -p[1], -p[2]
-
-def generate_concentric_cloud(motif, cell):
-    """
-    generates periodic point cloud in 'spherical' layers
-    """
-    t = generate_Z3()
-
-    points = []
-    while True:
-        point = next(t)
-        if point is None:
-            lattice = np.array(points) @ cell
-            layer = np.concatenate([motif + translation for translation in lattice])
-            yield layer
-            points = []
-        else:
-            points.append(point)
-'''
-
 def generate_concentric_cloud(motif, cell):
     ymax = defaultdict(int)
     d = 0
