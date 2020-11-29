@@ -11,6 +11,7 @@ from scipy.spatial.distance import cdist, pdist, squareform
 def dist(p):
     return sum(x**2 for x in p)
 
+'''
 def generate_N3():
     """
     generates batches of positive integer lattice points in 3D
@@ -68,6 +69,40 @@ def generate_concentric_cloud(motif, cell):
             points = []
         else:
             points.append(point)
+'''
+
+def generate_concentric_cloud(motif, cell):
+    ymax = defaultdict(int)
+    d = 0
+    while True:
+        positive_int_lattice = []
+        while True:
+            batch = []
+            for x in product(range(d+1), repeat=2):
+                pt = x + (ymax[x],)
+                if dist(pt) <= d**2:
+                    batch.append(pt)
+                    ymax[x] += 1
+            if not batch:
+                break
+            positive_int_lattice += batch
+        positive_int_lattice.sort(key=dist)
+
+        # expand positive_int_lattice to int_lattice with reflections
+        int_lattice = []
+        for p in positive_int_lattice:
+            int_lattice.append(p)
+            if p[0]: int_lattice.append((-p[0], p[1], p[2]))
+            if p[1]: int_lattice.append((p[0], -p[1], p[2]))
+            if p[2]: int_lattice.append((p[0], p[1], -p[2]))
+            if p[0] and p[1]: int_lattice.append((-p[0], -p[1], p[2]))
+            if p[0] and p[2]: int_lattice.append((-p[0], p[1], -p[2]))
+            if p[1] and p[2]: int_lattice.append((p[0], -p[1], -p[2]))
+            if p[0] and p[1] and p[2]: int_lattice.append((-p[0], -p[1], -p[2]))
+
+        lattice = np.array(int_lattice) @ cell
+        yield np.concatenate([motif + translation for translation in lattice])
+        d += 1
 
 def PDD(motif, cell, k):
     """
@@ -83,15 +118,14 @@ def PDD(motif, cell, k):
 
     # generates point cloud in concentric layers
     g = generate_concentric_cloud(motif, cell)
-    l = next(g)
-    points = l.shape[0]
-    cloud = [l]
-
+    points = 0
+    cloud = []
     # get at least k points in the cloud
     while points <= k:
         l = next(g)
         points += l.shape[0]
         cloud.append(l)
+    cloud.append(next(g))
     cloud = np.concatenate(cloud)
 
     # nearest neighbour distance query
