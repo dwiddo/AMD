@@ -175,3 +175,12 @@ def WPD_EMD(wpd, wpd_):
     from Wasserstein import wasserstein
     dm = cdist(wpd[:, 1:], wpd_[:, 1:], metric='euclidean')
     return wasserstein(wpd[:, 0], wpd_[:, 0], dm)
+
+def example(n):
+    cell = np.identity(n)
+    motif = np.random.uniform(size=(50, n))
+    print(AMD(motif, cell, 200))
+
+    
+if __name__ == "__main__":
+    example(7)  # 7 dimensions. Alg starts to get slow at 8+ dims.

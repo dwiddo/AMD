@@ -193,7 +193,7 @@ def WPD_EMD(wpd, wpd_):
 
 def example():
     cell = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    motif = np.random.uniform(size=(100, 3))   # random motif with 5 points
+    motif = np.random.uniform(size=(100, 3))
     print(AMD(motif, cell, 10000))
 
 if __name__ == "__main__":
