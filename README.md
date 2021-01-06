@@ -120,3 +120,6 @@ this is the code in the helper function ```WPD_EMD(wpd, wpd_)``` which accepts t
     square_dm = squareform(np.array(flat_dm))
     ```
     where ``` square_dm[i][j]``` is the EMD between ``` wpds[i]``` and ``` wpds[j]```. The condensed distance vector is accepted by ```scipy.cluster.hierarchy.linkage()``` used for hierarchical clustering. 
+
+### n-dimensional AMDs
+nd_AMD.py is a modified version of AMD.py that can take inputs of any dimension, i.e. an nxn matrix for a unit cell and an mxn matrix for a motif. There aren't actaully any differences in the main PDD function from the 3D version, only the generator for the point cloud. This file is new and may contains bugs.

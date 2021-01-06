@@ -50,7 +50,7 @@ def PDD(motif, cell, k):
 
     Parameters:
         motif: Cartesian coords of motif points. ndarray of shape (m,3)
-        lattice: unit cell (cartesian). ndarray shape (3,3)
+        cell: unit cell (cartesian). ndarray shape (3,3)
         k: no of columns in output. int >= 1
     Returns:
         ndarray shape (m,k) where m = motif.shape[0].
@@ -58,9 +58,10 @@ def PDD(motif, cell, k):
 
     # generates point cloud in concentric layers
     g = generate_concentric_cloud(motif, cell)
+
+    # get at least k points in the cloud
     points = 0
     cloud = []
-    # get at least k points in the cloud
     while points <= k:
         l = next(g)
         points += l.shape[0]
@@ -88,7 +89,7 @@ def AMD(motif, cell, k):
 
     Parameters:
         motif: Cartesian coords of motif points. ndarray of shape (m,3)
-        lattice: unit cell (cartesian). ndarray shape (3,3)
+        cell: unit cell (cartesian). ndarray shape (3,3)
         k: length of output. int >= 1
     Returns:
         ndarray shape (k,) where m = motif.shape[0].
@@ -108,7 +109,7 @@ def WPD(motif, cell, k, tol=None):
 
     Parameters:
         motif: Cartesian coords of motif points. ndarray of shape (m,3)
-        lattice: unit cell (cartesian). ndarray shape (3,3)
+        cell: unit cell (cartesian). ndarray shape (3,3)
         k: no of columns in output. int >= 1
     Returns:
         ndarray shape (m,k+1) where m = motif.shape[0].
@@ -192,8 +193,8 @@ def WPD_EMD(wpd, wpd_):
 
 def example():
     cell = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
-    motif = np.random.uniform(size=(5, 3))   # random motif with 5 points
-    print(AMD(motif, cell, 100))
+    motif = np.random.uniform(size=(100, 3))   # random motif with 5 points
+    print(AMD(motif, cell, 10000))
 
 if __name__ == "__main__":
     example()
